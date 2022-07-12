@@ -17,7 +17,6 @@ public class Matrix : Grid
         _sizeOfRect = sizeOfRect;
         VerticalAlignment = VerticalAlignment.Center;
         HorizontalAlignment = HorizontalAlignment.Center;
-        ShowGridLines = true;
         SetDefinitions();
 
         for (var i = 0; i < _amountOfRects; i++)

@@ -12,18 +12,21 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    
-    <StackLayout>
-        <StackPanel Spacing="20" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="50" IsVisible="{Binding StartMenu}">
-            <Button FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="100" Width="300">Start Game</Button>
-            <Button FontSize="20" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="80" Width="200">Results</Button>
+    <Border Padding="15">
+        <StackPanel Spacing="150">
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="20" Orientation="Horizontal" IsVisible="{Binding !Registered}">
+                <Button Width="100" Height="40" FontSize="20">Register</Button>
+                <Button Width="80" Height="40" FontSize="20">Log in</Button>
+            </StackPanel>
+            
+            <StackPanel HorizontalAlignment="Center" Spacing="20" Margin="20" IsVisible="{Binding StartMenu}">
+                <TextBlock Margin="0 0 0 100" HorizontalAlignment="Center" FontSize="50" FontWeight="Medium" IsVisible="{Binding StartMenu}">Memory Matrix</TextBlock>
+                
+                <Button Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
+                <Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
+            </StackPanel>
         </StackPanel>
-        
-        <StackLayout Spacing="20">
-            <Button Width="100" Height="30" FontSize="20">Register</Button>
-            <Button Width="80" Height="30" FontSize="20">Log in</Button>
-        </StackLayout>
-    </StackLayout>
+    </Border>
     <!--TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/!-->
 
 </Window>

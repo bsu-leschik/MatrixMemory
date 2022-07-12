@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="MatrixMemory/App.axaml" value="MatrixMemory/MatrixMemory.csproj" />
         <entry key="MatrixMemory/MainGame.axaml" value="MatrixMemory/MatrixMemory.csproj" />
         <entry key="MatrixMemory/Views/MainWindow.axaml" value="MatrixMemory/MatrixMemory.csproj" />
       </map>

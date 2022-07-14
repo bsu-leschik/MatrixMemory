@@ -25,11 +25,11 @@
                 <Button IsVisible="{Binding StartMenu}" Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
                 <Button IsVisible="{Binding StartMenu}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
                 
-                <TextBlock IsVisible="{Binding MainGame}"></TextBlock>
+                <TextBlock Name="WinText" IsVisible="{Binding Won}" >You Have Won!</TextBlock>
                 
                 <Border Padding = "1" Name="MatrixHolder" IsVisible="{Binding MainGame}" VerticalAlignment="Center"></Border>
 
-                <Button IsVisible="{Binding MainGame}">Restart</Button>
+                <Button IsVisible="{Binding MainGame}" Click="Restart_OnClick">Restart</Button>
                 <Button IsVisible="{Binding MainGame}">Save Game</Button>
             </StackPanel>
         </StackPanel>

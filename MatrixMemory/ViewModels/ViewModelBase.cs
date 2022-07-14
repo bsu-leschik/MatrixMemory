@@ -9,6 +9,7 @@ namespace MatrixMemory.ViewModels
         private bool _registration;
         private bool _mainGame;
         private bool _registered;
+        private bool _won;
 
         public bool StartMenu 
         { 
@@ -31,6 +32,12 @@ namespace MatrixMemory.ViewModels
         {
             get => _registered;
             set => this.RaiseAndSetIfChanged(ref _registered, value);
+        }
+
+        public bool Won
+        {
+            get => _won;
+            set => this.RaiseAndSetIfChanged(ref _won, value);
         }
     }
 }

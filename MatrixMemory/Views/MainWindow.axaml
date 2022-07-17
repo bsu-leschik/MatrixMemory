@@ -29,8 +29,9 @@
                 
                 <Border Padding = "1" Name="MatrixHolder" IsVisible="{Binding MainGame}" VerticalAlignment="Center"></Border>
 
-                <Button IsVisible="{Binding MainGame}" Click="Restart_OnClick">Restart</Button>
+                <Button IsVisible="{Binding MainGame}" Click="Restart">Restart</Button>
                 <Button IsVisible="{Binding MainGame}">Save Game</Button>
+                <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
             </StackPanel>
         </StackPanel>
     </Border>

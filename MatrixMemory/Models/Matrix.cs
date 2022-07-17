@@ -5,12 +5,13 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DynamicData;
 
 namespace MatrixMemory.Models;
 
 public class Matrix : Grid
 {
-    private readonly int _amountOfRects;
+    private int _amountOfRects;
     private readonly int _sizeOfRect;
     private IBrush[,] _realColors;
     
@@ -21,9 +22,13 @@ public class Matrix : Grid
 
     private int _totalAmountOfRects;
 
+    private int _failures;
+
     private readonly ArrayList _colors = new(new[] {Brushes.Black, Brushes.Blue, Brushes.Brown, Brushes.Green,
         Brushes.Orange, Brushes.Purple, Brushes.Red, Brushes.Yellow, Brushes.Pink, Brushes.Navy, Brushes.Gold,
         Brushes.Magenta, Brushes.Aqua, Brushes.Tomato, Brushes.Wheat, Brushes.Cyan});
+
+    public int Failures => _failures;
 
     public event EventHandler Win;
 
@@ -111,6 +116,7 @@ public class Matrix : Grid
                     else if (!Equals(_previousButton.Background, _currentButton.Background))
                     {
                         DispatcherTimer.RunOnce(CloseTiles, TimeSpan.FromMilliseconds(500));
+                        _failures++;
                     }
                     else
                     {
@@ -238,10 +244,21 @@ public class Matrix : Grid
         }
     }
 
-    public void Restart(int secToShowCards)
+    public void Restart(int secToShowCards, bool increaseDifficulty)
     {
-        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
+        RowDefinitions.RemoveRange(0 ,_amountOfRects);
+        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+
+        if (increaseDifficulty && _amountOfRects < 6)
+        {
+            _amountOfRects++;
+            _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        }
+        
+        SetDefinitions();
         InitializeColors();
+        SetButtons();
         DisableAllButtons(false);
         ShowCards(secToShowCards);
     }

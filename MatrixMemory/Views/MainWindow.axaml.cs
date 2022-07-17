@@ -1,25 +1,21 @@
 using System;
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MatrixMemory.Models;
 using MatrixMemory.ViewModels;
-using Timer = System.Timers.Timer;
 
 namespace MatrixMemory.Views
 {
     public partial class MainWindow : Window
     {
         private MainWindowViewModel? _view;
-        private Matrix _gameMatrix;
+        private readonly Matrix _gameMatrix;
+        private const int MaxFailures = 5;
 
         public MainWindow()
         {
             InitializeComponent();
-            _gameMatrix = new Matrix(3, 20 );
+            _gameMatrix = new Matrix(2, 20 );
             MatrixHolder.Child = _gameMatrix;
             
         }
@@ -36,10 +32,16 @@ namespace MatrixMemory.Views
             _gameMatrix.ShowCards(1);
         }
 
-        private void Restart_OnClick(object? sender, RoutedEventArgs e)
+        private void Restart(object? sender, RoutedEventArgs e)
+        {
+            _gameMatrix.Restart(1, _view.Won);
+            _view.Won = false;
+        }
+
+        private void NextLevel(object? sender, RoutedEventArgs e)
         {
             _view.Won = false;
-            _gameMatrix.Restart(1);
+            _gameMatrix.Restart(1, _gameMatrix.Failures < MaxFailures);
         }
     }
 }

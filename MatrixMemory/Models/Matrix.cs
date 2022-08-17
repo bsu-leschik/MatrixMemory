@@ -12,6 +12,7 @@ namespace MatrixMemory.Models;
 public class Matrix : Grid
 {
     private int _amountOfRects;
+    private readonly int _rectsAtStart;
     private readonly int _sizeOfRect;
     private IBrush[,] _realColors;
     
@@ -38,6 +39,8 @@ public class Matrix : Grid
         {
             throw new ArgumentOutOfRangeException(nameof(amountOfRects), $"{amountOfRects} cannot be more then 5 or less then 1");
         }
+
+        _rectsAtStart = amountOfRects;
         _amountOfRects = amountOfRects;
         _sizeOfRect = sizeOfRect;
         VerticalAlignment = VerticalAlignment.Center;
@@ -244,22 +247,59 @@ public class Matrix : Grid
         }
     }
 
-    public void Restart(int secToShowCards, bool increaseDifficulty)
+    public void NextLevel(int secToShowCards)
     {
         Children.RemoveRange(0, _amountOfRects * _amountOfRects);
         RowDefinitions.RemoveRange(0 ,_amountOfRects);
         ColumnDefinitions.RemoveRange(0, _amountOfRects);
 
-        if (increaseDifficulty && _amountOfRects < 6)
+        if (_amountOfRects < 6)
         {
             _amountOfRects++;
-            _totalAmountOfRects = _amountOfRects * _amountOfRects;
         }
+        else
+        {
+            EndGame();
+            return;
+        }
+
+        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+
         
         SetDefinitions();
         InitializeColors();
         SetButtons();
         DisableAllButtons(false);
         ShowCards(secToShowCards);
+    }
+
+    public void Restart(int secToShowCards)
+    {
+        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
+        RowDefinitions.RemoveRange(0 ,_amountOfRects);
+        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+
+        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        
+        SetDefinitions();
+        InitializeColors();
+        SetButtons();
+        DisableAllButtons(false);
+        ShowCards(secToShowCards);
+    }
+
+    public void EndGame()
+    {
+        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
+        RowDefinitions.RemoveRange(0 ,_amountOfRects);
+        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+        
+        _amountOfRects = _rectsAtStart;
+        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        
+        SetDefinitions();
+        InitializeColors();
+        SetButtons();
+        DisableAllButtons(false);
     }
 }

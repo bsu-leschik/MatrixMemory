@@ -3,7 +3,7 @@
         xmlns:vm="using:MatrixMemory.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="MatrixMemory.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="MatrixMemory">
@@ -15,8 +15,8 @@
     <Border Padding="15">
         <StackPanel Spacing="150">
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="20" Orientation="Horizontal" IsVisible="{Binding !Registered}">
-                <Button Width="100" Height="40" FontSize="20">Register</Button>
-                <Button Width="80" Height="40" FontSize="20">Log in</Button>
+                <Button Width="100" Height="40" FontSize="20" Click="Registration_OnClick">Register</Button>
+                <Button Width="80" Height="40" FontSize="20" Click="SignIn_OnClick">Log in</Button>
             </StackPanel>
             
             <StackPanel HorizontalAlignment="Center" Spacing="20" Margin="20">
@@ -31,7 +31,20 @@
 
                 <Button IsVisible="{Binding MainGame}" Click="Restart">Restart</Button>
                 <Button IsVisible="{Binding MainGame}">Save Game</Button>
+                <Button IsVisible="{Binding MainGame}" Click="BackFromGame">Back to Menu</Button>
                 <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
+                
+                <StackPanel Spacing="120" Name="Registration" IsVisible="{Binding Registration}">
+                    <TextBlock>Registration</TextBlock>
+                    <AutoCompleteBox FontSize="20" Name="UserName"></AutoCompleteBox>
+                    <AutoCompleteBox FontSize="20" Name="Password"></AutoCompleteBox>
+                    <StackPanel Spacing="20" Orientation="Horizontal">
+                        <Button FontSize="20" Name="Submit" Click="Register">Register</Button>
+                        <Button FontSize="20" Name="Back" Click="BackFromReg">Back</Button>
+                    </StackPanel>
+                    
+                </StackPanel>
+
             </StackPanel>
         </StackPanel>
     </Border>

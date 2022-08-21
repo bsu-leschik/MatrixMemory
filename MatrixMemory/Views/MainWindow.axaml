@@ -21,6 +21,10 @@
                         <Button Width="100" Height="40" FontSize="20" Click="Registration_OnClick">Register</Button>
                         <Button Width="80" Height="40" FontSize="20" Click="LogIn_OnClick">Log in</Button>
                     </StackPanel>
+                
+                    <StackPanel IsVisible="{Binding LoggedIn}" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="20" Orientation="Horizontal">
+                        <Button Width="100" Height="40" FontSize="20" Click="LogOut_OnClick">Log Out</Button>
+                    </StackPanel>
             </Grid>
             
             <StackPanel Name="StartMenu" HorizontalAlignment="Center" Spacing="20" Margin="20">
@@ -65,10 +69,10 @@
 
             <StackPanel Spacing="15" Name="Identification" HorizontalAlignment="Center" IsVisible="False">
                 <TextBlock FontSize="30">Log In</TextBlock>
-                <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserNameSignIn"></AutoCompleteBox>
+                <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserNameLogIn"></AutoCompleteBox>
                 
                 <StackPanel Spacing="5" Orientation="Horizontal">
-                    <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="PasswordSignIn"></TextBox>
+                    <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="PasswordLogIn"></TextBox>
                     <ToggleButton Name="PasswordBtnLogIn" Checked="ShowPassword" Unchecked="HidePassword" Width="37" Height="37" ToolTip.Tip="Show Password">
                         <Image Source="../Assets/ShowPass.png" Width="37" Height="37" ></Image>
                     </ToggleButton>

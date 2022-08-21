@@ -104,6 +104,8 @@ namespace MatrixMemory.Views
             }
 
             _view!.CurrentPlayer = player;
+            Password.Text = null;
+            UserName.Text = null;
             Back(sender, e);
         }
 
@@ -112,7 +114,8 @@ namespace MatrixMemory.Views
             
 
             if ((Equals(_lastPanel, Identification) && Equals(_currentPanel, Registration)) || 
-                (Equals(_currentPanel, Identification) && Equals(_lastPanel, Registration)))
+                (Equals(_currentPanel, Identification) && Equals(_lastPanel, Registration)) ||
+                Equals(_currentPanel, Identification) || Equals(_currentPanel, Registration))
             {
                 _currentPanel.IsVisible = false;
                 StartMenu.IsVisible = true;
@@ -132,7 +135,7 @@ namespace MatrixMemory.Views
         {
             if ((sender as Button)!.Name == "PasswordBtnLogIn")
             {
-                PasswordSignIn.PasswordChar = char.MinValue;
+                PasswordLogIn.PasswordChar = char.MinValue;
             }
             else if ((sender as Button)!.Name == "PasswordBtnReg")
             {
@@ -144,7 +147,7 @@ namespace MatrixMemory.Views
         {
             if ((sender as Button)!.Name == "PasswordBtnLogIn")
             {
-                PasswordSignIn.PasswordChar = '*';
+                PasswordLogIn.PasswordChar = '*';
             }
             else if ((sender as Button)!.Name == "PasswordBtnReg")
             {
@@ -154,13 +157,13 @@ namespace MatrixMemory.Views
 
         private async void LogIn(object? sender, RoutedEventArgs e)
         {
-            if (UserNameSignIn.Text == "" || PasswordSignIn.Text == null)
+            if (UserNameLogIn.Text == "" || PasswordLogIn.Text == null)
             {
                 SignInErrorText.Text = "Invalid username or password";
                 return;
             }
 
-            var player = new Player(UserNameSignIn.Text, PlayerData.EncryptPassword(PasswordSignIn.Text));
+            var player = new Player(UserNameLogIn.Text, PlayerData.EncryptPassword(PasswordLogIn.Text));
             try
             {
                 if (await PlayerData.IsPlayerValid(player))
@@ -177,6 +180,14 @@ namespace MatrixMemory.Views
             {
                 SignInErrorText.Text = exception.Message;
             }
+            
+            PasswordLogIn.Text = null;
+            UserNameLogIn.Text = null;
+        }
+
+        private void LogOut_OnClick(object? sender, RoutedEventArgs e)
+        {
+            _view!.CurrentPlayer = null;
         }
     }
 }

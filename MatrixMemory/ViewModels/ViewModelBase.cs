@@ -7,9 +7,8 @@ namespace MatrixMemory.ViewModels
     public class ViewModelBase : ReactiveObject
     {
         private bool _loggedIn;
-        private bool _won;
+        private bool _endedRound;
         private Player? _currentUser;
-        private bool _identification;
 
         public bool LoggedIn
         {
@@ -17,10 +16,10 @@ namespace MatrixMemory.ViewModels
             set => this.RaiseAndSetIfChanged(ref _loggedIn, value);
         }
 
-        public bool Won
+        public bool EndedRound
         {
-            get => _won;
-            set => this.RaiseAndSetIfChanged(ref _won, value);
+            get => _endedRound;
+            set => this.RaiseAndSetIfChanged(ref _endedRound, value);
         }
 
         public Player? CurrentPlayer

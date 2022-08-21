@@ -38,15 +38,14 @@
             
 
             <StackPanel Name="MainGame" HorizontalAlignment="Center" Spacing="20" Margin="20" IsVisible="False">
-                <TextBlock Name="WinText" IsVisible="{Binding Won}" >You Have Won!</TextBlock>
-                
+                <TextBlock Name="LevelEndText" IsVisible="{Binding EndedRound}" ></TextBlock>
                 <Border Padding = "1" Name="MatrixHolder" VerticalAlignment="Center"></Border>
 
                 <StackPanel Orientation="Horizontal">
                     <Button Click="Restart">Restart</Button>
                     <Button>Save Game</Button>
                     <Button Click="FromGameToMenu">Menu</Button>
-                    <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
+                    <Button IsVisible="{Binding EndedRound}" Click="NextLevel">Next</Button>
                 </StackPanel>
             </StackPanel>
                 

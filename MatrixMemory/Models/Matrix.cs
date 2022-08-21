@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
 
 namespace MatrixMemory.Models;
@@ -23,17 +26,18 @@ public class Matrix : Grid
     private int _totalAmountOfRects;
 
     private int _failures;
+    private int _failureLimit;
 
     private readonly ArrayList _colors = new(new[] {Brushes.Black, Brushes.Blue, Brushes.Brown, Brushes.Green,
         Brushes.Orange, Brushes.Purple, Brushes.Red, Brushes.Yellow, Brushes.Pink, Brushes.Navy, Brushes.Gold,
         Brushes.Magenta, Brushes.Aqua, Brushes.Tomato, Brushes.Wheat, Brushes.Cyan});
-
-    public int Failures => _failures;
-
+    
     public event EventHandler? Win;
+    public event EventHandler? OverFailuresLimit; 
 
-    public Matrix(int amountOfRects, int sizeOfRect)
+    public Matrix(int amountOfRects, int sizeOfRect, int failures = Int32.MaxValue)
     {
+        _failureLimit = failures;
         if (amountOfRects is < 1 or > 5)
         {
             throw new ArgumentOutOfRangeException(nameof(amountOfRects), $"{amountOfRects} cannot be more then 5 or less then 1");
@@ -51,6 +55,8 @@ public class Matrix : Grid
         InitializeColors();
         SetButtons();
     }
+
+    public int Failures => _failures;
 
     private void SetDefinitions()
     {
@@ -76,13 +82,17 @@ public class Matrix : Grid
         {
             for (var j = 0; j < _amountOfRects; j++)
             {
+                var style = new Style(x => x.OfType<Button>().Class("::pointerover").Template().OfType<ContentPresenter>());
+
                 var standardButton = new Button
                 {
                     VerticalAlignment = VerticalAlignment.Stretch,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Background = Brushes.Gray,
+                    Styles = { style }
                 };
 
+                
                 var j1 = j;
                 var i1 = i;
                 standardButton.Click += delegate(object? sender, RoutedEventArgs _)
@@ -121,6 +131,11 @@ public class Matrix : Grid
                         _showInOperation = true;
                         DispatcherTimer.RunOnce(CloseTiles, TimeSpan.FromMilliseconds(500));
                         _failures++;
+                        if (_failures > _failureLimit)
+                        {
+                            OverFailuresLimit!.Invoke(this, EventArgs.Empty);
+                            DisableAllButtons();
+                        }
                     }
                     else
                     {
@@ -256,7 +271,11 @@ public class Matrix : Grid
         RowDefinitions.RemoveRange(0 ,_amountOfRects);
         ColumnDefinitions.RemoveRange(0, _amountOfRects);
 
-        if (_amountOfRects < 6)
+        if (_failures > _failureLimit)
+        {
+            _amountOfRects--;
+        }
+        else if (_amountOfRects < 6)
         {
             _amountOfRects++;
         }
@@ -265,6 +284,8 @@ public class Matrix : Grid
             EndGame();
             return;
         }
+
+        _failures = 0;
 
         _totalAmountOfRects = _amountOfRects * _amountOfRects;
 
@@ -299,6 +320,7 @@ public class Matrix : Grid
         
         _amountOfRects = _rectsAtStart;
         _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        _failures = 0;
         
         SetDefinitions();
         InitializeColors();

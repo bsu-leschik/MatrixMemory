@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.Design.Serialization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MatrixMemory.Models;
@@ -18,9 +17,18 @@ namespace MatrixMemory.Views
         public MainWindow()
         {
             InitializeComponent();
-            _gameMatrix = new Matrix(2, 20 );
+            _gameMatrix = new Matrix(2, 20, MaxFailures);
             MatrixHolder.Child = _gameMatrix;
-            _gameMatrix.Win += delegate { _view!.Won = true; };
+            _gameMatrix.Win += delegate
+            {
+                _view!.EndedRound = true;
+                LevelEndText.Text = "You have won!";
+            };
+            _gameMatrix.OverFailuresLimit += delegate
+            {
+                _view!.EndedRound = true;
+                LevelEndText.Text = "Sorry, but you have lost:(";
+            };
             _lastPanel = StartMenu;
             _currentPanel = StartMenu;
         }
@@ -44,18 +52,18 @@ namespace MatrixMemory.Views
         private void Restart(object? sender, RoutedEventArgs e)
         {
             _gameMatrix.Restart(1);
-            _view!.Won = false;
+            _view!.EndedRound = false;
         }
 
         private void NextLevel(object? sender, RoutedEventArgs e)
         {
-            _view!.Won = false;
+            _view!.EndedRound = false;
             _gameMatrix.NextLevel(1);
         }
         
         private void FromGameToMenu(object? sender, RoutedEventArgs e)
         {
-            _view!.Won = false;
+            _view!.EndedRound = false;
 
             MainGame.IsVisible = false;
             StartMenu.IsVisible = true;

@@ -6,34 +6,15 @@ namespace MatrixMemory.ViewModels
 {
     public class ViewModelBase : ReactiveObject
     {
-        private bool _startMenu = true;
-        private bool _registration;
-        private bool _mainGame;
-        private bool _registered;
+        private bool _loggedIn;
         private bool _won;
         private Player? _currentUser;
+        private bool _identification;
 
-        public bool StartMenu 
-        { 
-            get => _startMenu;
-            set => this.RaiseAndSetIfChanged(ref _startMenu, value);
-        }
-
-        public bool Registration
+        public bool LoggedIn
         {
-            get => _registration;
-            set => this.RaiseAndSetIfChanged(ref _registration, value);
-        }
-
-        public bool MainGame
-        {
-            get => _mainGame;
-            set => this.RaiseAndSetIfChanged(ref _mainGame, value);
-        }
-        public bool Registered
-        {
-            get => _registered;
-            set => this.RaiseAndSetIfChanged(ref _registered, value);
+            get => _loggedIn;
+            set => this.RaiseAndSetIfChanged(ref _loggedIn, value);
         }
 
         public bool Won
@@ -48,7 +29,7 @@ namespace MatrixMemory.ViewModels
             set
             {
                 _currentUser = value;
-                _registered = value != null;
+                LoggedIn = value != null;
             }
         }
     }

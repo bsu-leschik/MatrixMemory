@@ -14,46 +14,70 @@
     
     <Border Padding="15">
         <StackPanel Spacing="150">
-            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="20" Orientation="Horizontal" IsVisible="{Binding !Registered}">
-                <Button Width="100" Height="40" FontSize="20" Click="Registration_OnClick">Register</Button>
-                <Button Width="80" Height="40" FontSize="20" Click="SignIn_OnClick">Log in</Button>
+            <Grid>
+                    <Button Grid.Column="0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" Name="BackButton" Height="40" FontSize="20" Click="Back">Back</Button>
+                
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="20" Orientation="Horizontal" IsVisible="{Binding !LoggedIn}">
+                        <Button Width="100" Height="40" FontSize="20" Click="Registration_OnClick">Register</Button>
+                        <Button Width="80" Height="40" FontSize="20" Click="LogIn_OnClick">Log in</Button>
+                    </StackPanel>
+            </Grid>
+            
+            <StackPanel Name="StartMenu" HorizontalAlignment="Center" Spacing="20" Margin="20">
+                <TextBlock Margin="0 0 0 100" HorizontalAlignment="Center" FontSize="50" FontWeight="Medium">Memory Matrix</TextBlock>
+                
+                <Button Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
+                <Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
+                
             </StackPanel>
             
-            <StackPanel HorizontalAlignment="Center" Spacing="20" Margin="20">
-                <TextBlock Margin="0 0 0 100" HorizontalAlignment="Center" FontSize="50" FontWeight="Medium" IsVisible="{Binding StartMenu}">Memory Matrix</TextBlock>
-                
-                <Button IsVisible="{Binding StartMenu}" Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
-                <Button IsVisible="{Binding StartMenu}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
-                
+            
+
+            <StackPanel Name="MainGame" HorizontalAlignment="Center" Spacing="20" Margin="20" IsVisible="False">
                 <TextBlock Name="WinText" IsVisible="{Binding Won}" >You Have Won!</TextBlock>
                 
-                <Border Padding = "1" Name="MatrixHolder" IsVisible="{Binding MainGame}" VerticalAlignment="Center"></Border>
+                <Border Padding = "1" Name="MatrixHolder" VerticalAlignment="Center"></Border>
 
-                <Button IsVisible="{Binding MainGame}" Click="Restart">Restart</Button>
-                <Button IsVisible="{Binding MainGame}">Save Game</Button>
-                <Button IsVisible="{Binding MainGame}" Click="BackFromGame">Back to Menu</Button>
-                <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
-                
-                <StackPanel Spacing="15" Name="Registration" IsVisible="{Binding Registration}">
-                    <TextBlock FontSize="30">Registration</TextBlock>
-                    <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserName"></AutoCompleteBox>
-                    
-                    <StackPanel Spacing="5" Orientation="Horizontal">
-                        <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="Password"></TextBox>
-                        <ToggleButton Checked="ShowPassword" Unchecked="HidePassword" Width="37" Height="37" ToolTip.Tip="Show Password">
-                            <Image Source="../Assets/ShowPass.png" Width="37" Height="37" ></Image>
-                        </ToggleButton>
-                    </StackPanel>
-                    
-                    <TextBlock FontStyle="Oblique" Name="RegErrorText"></TextBlock>
-                    
-                    <StackPanel Spacing="20" Orientation="Horizontal">
-                        <Button FontSize="20" Name="Submit" Click="Register">Register</Button>
-                        <Button FontSize="20" Name="Back" Click="BackFromReg">Back</Button>
-                    </StackPanel>
-                    
+                <StackPanel Orientation="Horizontal">
+                    <Button Click="Restart">Restart</Button>
+                    <Button>Save Game</Button>
+                    <Button Click="FromGameToMenu">Menu</Button>
+                    <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
                 </StackPanel>
+            </StackPanel>
+                
+            <StackPanel Spacing="15" Name="Registration" IsVisible="False" HorizontalAlignment="Center">
+                <TextBlock FontSize="30">Registration</TextBlock>
+                <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserName"></AutoCompleteBox>
+                
+                <StackPanel Spacing="5" Orientation="Horizontal">
+                    <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="Password"></TextBox>
+                    <ToggleButton Name="PasswordBtnReg" Checked="ShowPassword" Unchecked="HidePassword" Width="37" Height="37" ToolTip.Tip="Show Password">
+                        <Image Source="../Assets/ShowPass.png" Width="37" Height="37" ></Image>
+                    </ToggleButton>
+                </StackPanel>
+                
+                <TextBlock FontStyle="Oblique" Name="RegErrorText"></TextBlock>
+                
+                <Button FontSize="20" Name="Submit" Click="Register">Register</Button>
+                
+            </StackPanel>
 
+            <StackPanel Spacing="15" Name="Identification" HorizontalAlignment="Center" IsVisible="False">
+                <TextBlock FontSize="30">Log In</TextBlock>
+                <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserNameSignIn"></AutoCompleteBox>
+                
+                <StackPanel Spacing="5" Orientation="Horizontal">
+                    <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="PasswordSignIn"></TextBox>
+                    <ToggleButton Name="PasswordBtnLogIn" Checked="ShowPassword" Unchecked="HidePassword" Width="37" Height="37" ToolTip.Tip="Show Password">
+                        <Image Source="../Assets/ShowPass.png" Width="37" Height="37" ></Image>
+                    </ToggleButton>
+                </StackPanel>
+                
+                <TextBlock FontStyle="Oblique" Name="SignInErrorText"></TextBlock>
+                
+                <Button FontSize="20" Click="LogIn">Log In</Button>
+                
             </StackPanel>
         </StackPanel>
     </Border>

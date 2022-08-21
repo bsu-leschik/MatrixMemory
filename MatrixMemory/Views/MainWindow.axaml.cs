@@ -1,16 +1,14 @@
 using System;
-using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MatrixMemory.Models;
 using MatrixMemory.ViewModels;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MatrixMemory.Views
 {
     public partial class MainWindow : Window
     {
-        private MainWindowViewModel _view;
+        private MainWindowViewModel? _view;
         private readonly Matrix _gameMatrix;
         private const int MaxFailures = 5;
 
@@ -19,18 +17,17 @@ namespace MatrixMemory.Views
             InitializeComponent();
             _gameMatrix = new Matrix(2, 20 );
             MatrixHolder.Child = _gameMatrix;
-            _gameMatrix.Win += delegate(object? sender, EventArgs args) { _view.Won = true; };
-
+            _gameMatrix.Win += delegate { _view!.Won = true; };
         }
         
         private void OnActivated(object? sender, EventArgs e)
         {
-            _view ??= DataContext as MainWindowViewModel ?? throw new InvalidOperationException();
+            _view = DataContext as MainWindowViewModel ?? throw new InvalidOperationException();
         }
 
         private void StartGameButton(object? sender, RoutedEventArgs e)
         {
-            _view.StartMenu = false;
+            _view!.StartMenu = false;
             _view.MainGame = true;
             
             _gameMatrix.ShowCards(1);
@@ -39,18 +36,18 @@ namespace MatrixMemory.Views
         private void Restart(object? sender, RoutedEventArgs e)
         {
             _gameMatrix.Restart(1);
-            _view.Won = false;
+            _view!.Won = false;
         }
 
         private void NextLevel(object? sender, RoutedEventArgs e)
         {
-            _view.Won = false;
+            _view!.Won = false;
             _gameMatrix.NextLevel(1);
         }
         
         private void BackFromGame(object? sender, RoutedEventArgs e)
         {
-            _view.Won = false;
+            _view!.Won = false;
             _view.MainGame = false;
             _view.StartMenu = true;
             _gameMatrix.EndGame();
@@ -58,9 +55,7 @@ namespace MatrixMemory.Views
 
         private void Registration_OnClick(object? sender, RoutedEventArgs e)
         {
-            _view ??= DataContext as MainWindowViewModel ?? throw new InvalidOperationException();
-
-            _view.MainGame = false;
+            _view!.MainGame = false;
             _view.StartMenu = false;
             _view.Registration = true;
         }
@@ -82,19 +77,19 @@ namespace MatrixMemory.Views
             {
                 await PlayerData.AddPlayer(player);
             }
-            catch (ArgumentException exception)
+            catch (ArgumentException)
             {
                 RegErrorText.Text = "Such user already exists";
                 return;
             }
 
-            _view.CurrentPlayer = player;
+            _view!.CurrentPlayer = player;
             BackFromReg(sender, e);
         }
 
         private void BackFromReg(object? sender, RoutedEventArgs e)
         {
-            _view.Registration = false;
+            _view!.Registration = false;
             _view.StartMenu = true;
         }
 

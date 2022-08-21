@@ -5,7 +5,6 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
-using DynamicData;
 
 namespace MatrixMemory.Models;
 
@@ -14,7 +13,7 @@ public class Matrix : Grid
     private int _amountOfRects;
     private readonly int _rectsAtStart;
     private readonly int _sizeOfRect;
-    private IBrush[,] _realColors;
+    private IBrush[,]? _realColors;
     
     private Button? _previousButton;
     private Button? _currentButton;
@@ -31,7 +30,7 @@ public class Matrix : Grid
 
     public int Failures => _failures;
 
-    public event EventHandler Win;
+    public event EventHandler? Win;
 
     public Matrix(int amountOfRects, int sizeOfRect)
     {
@@ -103,7 +102,7 @@ public class Matrix : Grid
                         return;
                     }
                     
-                    _currentButton.Background = _realColors[i1, j1];
+                    _currentButton.Background = _realColors![i1, j1];
 
                     if (Equals(_currentButton.Background, Brushes.White))
                     {
@@ -195,7 +194,7 @@ public class Matrix : Grid
         int i = 0, j = 0;
         foreach (var control in Children)
         {
-            (control as Button)!.Background = _realColors[i, j];
+            (control as Button)!.Background = _realColors![i, j];
             if (j == _amountOfRects - 1)
             {
                 i++;
@@ -243,7 +242,7 @@ public class Matrix : Grid
         if (_totalAmountOfRects == 0)
         {
             DisableAllButtons();
-            Win.Invoke(this, EventArgs.Empty);
+            Win!.Invoke(this, EventArgs.Empty);
         }
     }
 

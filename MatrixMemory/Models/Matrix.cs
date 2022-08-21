@@ -91,6 +91,7 @@ public class Matrix : Grid
                     {
                         return;
                     }
+
                     if (sender == null)
                     {
                         throw new ArgumentNullException($"{sender} cannot be null");
@@ -117,6 +118,7 @@ public class Matrix : Grid
                     }
                     else if (!Equals(_previousButton.Background, _currentButton.Background))
                     {
+                        _showInOperation = true;
                         DispatcherTimer.RunOnce(CloseTiles, TimeSpan.FromMilliseconds(500));
                         _failures++;
                     }
@@ -137,9 +139,11 @@ public class Matrix : Grid
 
     private void CloseTiles()
     {
+        Console.WriteLine("2");
         _previousButton!.Background = Brushes.Gray;
         _currentButton!.Background = Brushes.Gray;
         _previousButton = null;
+        _showInOperation = false;
     }
 
     private void InitializeColors()

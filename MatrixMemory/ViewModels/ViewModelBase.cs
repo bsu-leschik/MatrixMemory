@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReactiveUI;
+using MatrixMemory.Models;
 
 namespace MatrixMemory.ViewModels
 {
@@ -10,6 +11,7 @@ namespace MatrixMemory.ViewModels
         private bool _mainGame;
         private bool _registered;
         private bool _won;
+        private Player? _currentUser;
 
         public bool StartMenu 
         { 
@@ -38,6 +40,16 @@ namespace MatrixMemory.ViewModels
         {
             get => _won;
             set => this.RaiseAndSetIfChanged(ref _won, value);
+        }
+
+        public Player? CurrentPlayer
+        {
+            get => _currentUser;
+            set
+            {
+                _currentUser = value;
+                _registered = value != null;
+            }
         }
     }
 }

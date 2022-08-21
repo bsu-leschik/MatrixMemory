@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="MatrixMemory.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="MatrixMemory">
+        Title="MatrixMemory" Activated="OnActivated">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -34,10 +34,19 @@
                 <Button IsVisible="{Binding MainGame}" Click="BackFromGame">Back to Menu</Button>
                 <Button IsVisible="{Binding Won}" Click="NextLevel">Next</Button>
                 
-                <StackPanel Spacing="120" Name="Registration" IsVisible="{Binding Registration}">
-                    <TextBlock>Registration</TextBlock>
-                    <AutoCompleteBox FontSize="20" Name="UserName"></AutoCompleteBox>
-                    <AutoCompleteBox FontSize="20" Name="Password"></AutoCompleteBox>
+                <StackPanel Spacing="15" Name="Registration" IsVisible="{Binding Registration}">
+                    <TextBlock FontSize="30">Registration</TextBlock>
+                    <AutoCompleteBox Watermark="Username" FontSize="20" Name="UserName"></AutoCompleteBox>
+                    
+                    <StackPanel Spacing="5" Orientation="Horizontal">
+                        <TextBox Watermark="Password" PasswordChar="*" MinWidth="143" FontSize="20" Name="Password"></TextBox>
+                        <ToggleButton Checked="ShowPassword" Unchecked="HidePassword" Width="37" Height="37" ToolTip.Tip="Show Password">
+                            <Image Source="../Assets/ShowPass.png" Width="37" Height="37" ></Image>
+                        </ToggleButton>
+                    </StackPanel>
+                    
+                    <TextBlock FontStyle="Oblique" Name="RegErrorText"></TextBlock>
+                    
                     <StackPanel Spacing="20" Orientation="Horizontal">
                         <Button FontSize="20" Name="Submit" Click="Register">Register</Button>
                         <Button FontSize="20" Name="Back" Click="BackFromReg">Back</Button>

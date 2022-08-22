@@ -30,12 +30,16 @@ public class Matrix : Grid
 
     private bool _disabled;
 
+    private int _score;
+
     private readonly ArrayList _colors = new(new[] {Brushes.Black, Brushes.Blue, Brushes.Brown, Brushes.Green,
         Brushes.Orange, Brushes.Purple, Brushes.Red, Brushes.Yellow, Brushes.Pink, Brushes.Navy, Brushes.Gold,
         Brushes.Magenta, Brushes.Aqua, Brushes.Tomato, Brushes.Wheat, Brushes.Cyan});
     
     public event EventHandler? Win;
-    public event EventHandler? OverFailuresLimit; 
+    public event EventHandler? OverFailuresLimit;
+
+    public event EventHandler? GameEnded;
 
     public Matrix(int amountOfTiles, int sizeOfMatrix, int failures = Int32.MaxValue, int tileMargin = 1)
     {
@@ -60,6 +64,8 @@ public class Matrix : Grid
     }
 
     public int Failures => _failures;
+
+    public int Score => _score;
 
     private void SetDefinitions()
     {
@@ -118,6 +124,7 @@ public class Matrix : Grid
                     if (Equals(_currentTile.Fill, Brushes.White))
                     {
                         _totalAmountOfTiles--;
+                        _score++;
                         CheckIfWin();
                         return;
                     }
@@ -131,10 +138,11 @@ public class Matrix : Grid
                         _showInOperation = true;
                         DispatcherTimer.RunOnce(CloseTiles, TimeSpan.FromMilliseconds(500));
                         _failures++;
+                        _score--;
                         if (_failures > _failureLimit)
                         {
                             Console.WriteLine("dfdaffdsa");
-                            OverFailuresLimit!.Invoke(this, EventArgs.Empty);
+                            OverFailuresLimit?.Invoke(this, EventArgs.Empty);
                             DisableAllTiles();
                         }
                     }
@@ -142,6 +150,7 @@ public class Matrix : Grid
                     {
                         _previousTile = null;
                         _totalAmountOfTiles -= 2;
+                        _score++;
                         CheckIfWin();
                     }
                 };
@@ -155,8 +164,8 @@ public class Matrix : Grid
 
     private void CloseTiles()
     {
-        _previousTile.Fill = Brushes.Gray;
-        _currentTile.Fill = Brushes.Gray;
+        _previousTile!.Fill = Brushes.Gray;
+        _currentTile!.Fill = Brushes.Gray;
         _previousTile = null;
         _showInOperation = false;
     }
@@ -258,22 +267,28 @@ public class Matrix : Grid
         if (_totalAmountOfTiles == 0)
         {
             DisableAllTiles();
-            Win!.Invoke(this, EventArgs.Empty);
+            Win?.Invoke(this, EventArgs.Empty);
+            if (_amountOfTiles == 5)
+            {
+                GameEnded?.Invoke(this, EventArgs.Empty);
+            }
         }
     }
 
     public void NextLevel(int secToShowCards)
     {
-        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
-        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
-        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
-
         if (_failures > _failureLimit)
         {
+            Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+            RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+            ColumnDefinitions.RemoveRange(0, _amountOfTiles);
             _amountOfTiles--;
         }
-        else if (_amountOfTiles < 6)
+        else if (_amountOfTiles < 5)
         {
+            Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+            RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+            ColumnDefinitions.RemoveRange(0, _amountOfTiles);
             _amountOfTiles++;
         }
         else
@@ -282,6 +297,8 @@ public class Matrix : Grid
             return;
         }
 
+        
+        
         _failures = 0;
 
         _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
@@ -314,11 +331,12 @@ public class Matrix : Grid
         Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
         RowDefinitions.RemoveRange(0 ,_amountOfTiles);
         ColumnDefinitions.RemoveRange(0, _amountOfTiles);
-        
+
         _amountOfTiles = _tilesAtStart;
         _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
         _failures = 0;
-        
+        _score = 0;
+
         SetDefinitions();
         InitializeColors();
         SetTiles();

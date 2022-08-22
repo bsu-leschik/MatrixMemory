@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ReactiveUI;
+﻿using ReactiveUI;
 using MatrixMemory.Models;
 
 namespace MatrixMemory.ViewModels

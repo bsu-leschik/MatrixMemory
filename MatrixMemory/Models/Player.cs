@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text.Json.Serialization;
 
 namespace MatrixMemory.Models;
@@ -15,9 +16,9 @@ public class Player
     public int[]? LastGame { get; set; }
 
     [JsonInclude]
-    public int[]? Statistics { get; set; }
+    public ArrayList? Statistics { get; set; }
 
-    public Player(string userName, string password, int[]? lastGame = null, int[]? statistics = null)
+    public Player(string userName, string password, ArrayList? statistics = null, int[]? lastGame = null)
     {
         UserName = userName;
         Password = password;

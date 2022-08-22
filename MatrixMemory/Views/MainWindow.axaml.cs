@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MatrixMemory.Models;
@@ -12,12 +13,12 @@ namespace MatrixMemory.Views
         private readonly Matrix _gameMatrix;
         private StackPanel _lastPanel;
         private StackPanel _currentPanel;
-        private const int MaxFailures = 5;
+        private const int MaxFailures = 100;
 
         public MainWindow()
         {
             InitializeComponent();
-            _gameMatrix = new Matrix(2, 200, MaxFailures);
+            _gameMatrix = new Matrix(2, 200 , MaxFailures);
             MatrixHolder.Child = _gameMatrix;
             _gameMatrix.Win += delegate
             {
@@ -28,6 +29,19 @@ namespace MatrixMemory.Views
             {
                 _view!.EndedRound = true;
                 LevelEndText.Text = "Sorry, but you have lost:(";
+            };
+            
+            _gameMatrix.GameEnded += delegate(object? sender, EventArgs args)
+            {
+                if (_view!.CurrentPlayer?.Statistics == null && _view.CurrentPlayer != null)
+                {
+                    _view!.CurrentPlayer.Statistics = new ArrayList { _gameMatrix.Score };
+                }
+                else if (_view.CurrentPlayer != null)
+                {
+                    _view!.CurrentPlayer.Statistics!.Add(_gameMatrix.Score);
+                }
+                LevelEndText.Text = $"Your score is {_gameMatrix.Score}";
             };
             _lastPanel = StartMenu;
             _currentPanel = StartMenu;

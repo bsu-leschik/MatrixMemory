@@ -17,7 +17,7 @@ namespace MatrixMemory.Views
         public MainWindow()
         {
             InitializeComponent();
-            _gameMatrix = new Matrix(2, 20, MaxFailures);
+            _gameMatrix = new Matrix(2, 200, MaxFailures);
             MatrixHolder.Child = _gameMatrix;
             _gameMatrix.Win += delegate
             {
@@ -46,7 +46,7 @@ namespace MatrixMemory.Views
             _lastPanel = StartMenu;
             _currentPanel = MainGame;
     
-            _gameMatrix.ShowCards(1);
+            _gameMatrix.ShowTiles(1);
         }
 
         private void Restart(object? sender, RoutedEventArgs e)

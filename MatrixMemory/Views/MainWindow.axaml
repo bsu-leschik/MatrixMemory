@@ -31,8 +31,8 @@
                 <TextBlock Margin="0 0 0 100" HorizontalAlignment="Center" FontSize="50" FontWeight="Medium">Memory Matrix</TextBlock>
                 
                 <Button Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
-                <Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
-                
+                <Button Click="ShowResults" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
+                <TextBlock HorizontalAlignment="Center" Name="ResultsProblem" FontStyle="Oblique" FontWeight="Heavy"></TextBlock>
             </StackPanel>
             
             
@@ -43,7 +43,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <Button Click="Restart">Restart</Button>
-                    <Button>Save Game</Button>
+                    <Button Click="SaveGame">Save Game</Button>
                     <Button Click="FromGameToMenu">Menu</Button>
                     <Button IsVisible="{Binding EndedRound}" Click="NextLevel">Next</Button>
                 </StackPanel>
@@ -81,6 +81,16 @@
                 
                 <Button FontSize="20" Click="LogIn">Log In</Button>
                 
+            </StackPanel>
+            
+            <StackPanel Spacing="15" Name="Statistics" HorizontalAlignment="Center" IsVisible="False">
+                <TextBlock FontSize="30">Statistics</TextBlock>
+                <DataGrid>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Game №" Binding="{Binding GameNumbers}"/>
+                        <DataGridTextColumn Header="Score" Binding="{Binding GameScores}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
         </StackPanel>
     </Border>

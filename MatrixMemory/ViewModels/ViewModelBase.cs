@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using System.Collections;
+using ReactiveUI;
 using MatrixMemory.Models;
 
 namespace MatrixMemory.ViewModels
@@ -29,6 +30,26 @@ namespace MatrixMemory.ViewModels
                 _currentUser = value;
                 LoggedIn = value != null;
             }
+        }
+
+        public ArrayList GameNumbers
+        {
+            get
+            {
+                var list = new ArrayList { "Last Game" };
+
+                for (var i = 1; i < _currentUser!.Statistics!.Count; i++)
+                {
+                    list.Add(i);
+                }
+
+                return list;
+            }
+        }
+
+        public ArrayList GameScores
+        {
+            get => _currentUser!.Statistics!;
         }
     }
 }

@@ -311,6 +311,7 @@ public class Matrix : Grid
         ShowTiles(secToShowCards);
     }
 
+    //score
     public void Restart(int secToShowCards)
     {
         Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
@@ -341,5 +342,10 @@ public class Matrix : Grid
         InitializeColors();
         SetTiles();
         DisableAllTiles(false);
+    }
+
+    public GameSave SaveGame()
+    {
+        return new GameSave(_realColors!, _previousTile, _currentTile, _totalAmountOfTiles, _failures, _score);
     }
 }

@@ -36,10 +36,12 @@ namespace MatrixMemory.Views
                 if (_view!.CurrentPlayer?.Statistics == null && _view.CurrentPlayer != null)
                 {
                     _view!.CurrentPlayer.Statistics = new ArrayList { _gameMatrix.Score };
+                    PlayerData.SavePlayer(_view.CurrentPlayer);
                 }
                 else if (_view.CurrentPlayer != null)
                 {
                     _view!.CurrentPlayer.Statistics!.Add(_gameMatrix.Score);
+                    PlayerData.SavePlayer(_view.CurrentPlayer);
                 }
                 LevelEndText.Text = $"Your score is {_gameMatrix.Score}";
             };
@@ -188,9 +190,10 @@ namespace MatrixMemory.Views
             var player = new Player(UserNameLogIn.Text, PlayerData.EncryptPassword(PasswordLogIn.Text));
             try
             {
-                if (await PlayerData.IsPlayerValid(player))
+                var realPlayer = await PlayerData.IsPlayerValid(player);
+                if (realPlayer != null)
                 {
-                    _view!.CurrentPlayer = player;
+                    _view!.CurrentPlayer = realPlayer;
                     Back(sender, e);
                 }
                 else
@@ -211,5 +214,40 @@ namespace MatrixMemory.Views
         {
             _view!.CurrentPlayer = null;
         }
+        
+        private void ShowResults(object? sender, RoutedEventArgs e)
+        {
+            if (!_view!.LoggedIn)
+            {
+                ResultsProblem.Text = "Log in firstly";
+                return;
+            }
+
+            if (_view.CurrentPlayer!.Statistics == null || _view.CurrentPlayer!.Statistics.Count == 0)
+            {
+                ResultsProblem.Text = "You haven`t played any games yet";
+                
+                return;
+            }
+            _lastPanel = StartMenu;
+            _currentPanel = Statistics;
+
+            _lastPanel.IsVisible = false;
+            _currentPanel.IsVisible = true;
+        }
+
+        private void SaveGame(object? sender, RoutedEventArgs e)
+        {
+            if (_view!.CurrentPlayer == null)
+            {
+                return;
+            }
+
+            //_view!.CurrentPlayer.LastGame = _gameMatrix.SaveGame();
+            
+            
+        }
+
+        
     }
 }

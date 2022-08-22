@@ -1,32 +1,34 @@
 using System;
 using System.Collections;
-using Avalonia.Animation;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 using Avalonia.Threading;
 
 namespace MatrixMemory.Models;
 
 public class Matrix : Grid
 {
-    private int _amountOfRects;
-    private readonly int _rectsAtStart;
-    private readonly int _sizeOfRect;
+    private int _amountOfTiles;
+    private readonly int _tilesAtStart;
+    private readonly int _sizeOfMatrix;
+    private readonly int _tileMargin;
     private IBrush[,]? _realColors;
     
-    private Button? _previousButton;
-    private Button? _currentButton;
+    private Rectangle? _previousTile;
+    private Rectangle? _currentTile;
 
     private bool _showInOperation;
 
-    private int _totalAmountOfRects;
+    private int _totalAmountOfTiles;
 
     private int _failures;
-    private int _failureLimit;
+    private readonly int _failureLimit;
+
+    private bool _disabled;
 
     private readonly ArrayList _colors = new(new[] {Brushes.Black, Brushes.Blue, Brushes.Brown, Brushes.Green,
         Brushes.Orange, Brushes.Purple, Brushes.Red, Brushes.Yellow, Brushes.Pink, Brushes.Navy, Brushes.Gold,
@@ -35,69 +37,67 @@ public class Matrix : Grid
     public event EventHandler? Win;
     public event EventHandler? OverFailuresLimit; 
 
-    public Matrix(int amountOfRects, int sizeOfRect, int failures = Int32.MaxValue)
+    public Matrix(int amountOfTiles, int sizeOfMatrix, int failures = Int32.MaxValue, int tileMargin = 1)
     {
         _failureLimit = failures;
-        if (amountOfRects is < 1 or > 5)
+        if (amountOfTiles is < 1 or > 5)
         {
-            throw new ArgumentOutOfRangeException(nameof(amountOfRects), $"{amountOfRects} cannot be more then 5 or less then 1");
+            throw new ArgumentOutOfRangeException(nameof(amountOfTiles), $"{amountOfTiles} cannot be more then 5 or less then 1");
         }
 
-        _rectsAtStart = amountOfRects;
-        _amountOfRects = amountOfRects;
-        _sizeOfRect = sizeOfRect;
+        _tilesAtStart = amountOfTiles;
+        _amountOfTiles = amountOfTiles;
+        _sizeOfMatrix = sizeOfMatrix;
+        _tileMargin = tileMargin;
         VerticalAlignment = VerticalAlignment.Center;
         HorizontalAlignment = HorizontalAlignment.Center;
 
-        _totalAmountOfRects = amountOfRects * amountOfRects;
+        _totalAmountOfTiles = amountOfTiles * amountOfTiles;
 
         SetDefinitions();
         InitializeColors();
-        SetButtons();
+        SetTiles();
     }
 
     public int Failures => _failures;
 
     private void SetDefinitions()
     {
-        for (var i = 0; i < _amountOfRects; i++)
+        for (var i = 0; i < _amountOfTiles; i++)
         {
             var standardColumnDef = new ColumnDefinition
             {
-                Width = new GridLength(_amountOfRects * _sizeOfRect)
+                Width = new GridLength(_sizeOfMatrix / _amountOfTiles)
             };
             ColumnDefinitions.Add(standardColumnDef);
             
             var standardRowDef = new RowDefinition
             {
-                Height = new GridLength(_amountOfRects * _sizeOfRect)
+                Height = new GridLength(_sizeOfMatrix / _amountOfTiles)
             };
             RowDefinitions.Add(standardRowDef);
         }
     }
 
-    private void SetButtons()
+    private void SetTiles()
     {
-        for (var i = 0; i < _amountOfRects; i++)
+        for (var i = 0; i < _amountOfTiles; i++)
         {
-            for (var j = 0; j < _amountOfRects; j++)
+            for (var j = 0; j < _amountOfTiles; j++)
             {
-                var style = new Style(x => x.OfType<Button>().Class("::pointerover").Template().OfType<ContentPresenter>());
-
-                var standardButton = new Button
+                var standardRectangle = new Rectangle()
                 {
                     VerticalAlignment = VerticalAlignment.Stretch,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Background = Brushes.Gray,
-                    Styles = { style }
+                    Fill = Brushes.Gray,
+                    Margin = Thickness.Parse(_tileMargin.ToString())
                 };
-
                 
                 var j1 = j;
                 var i1 = i;
-                standardButton.Click += delegate(object? sender, RoutedEventArgs _)
+                standardRectangle.Tapped += delegate(object? sender, RoutedEventArgs _)
                 {
-                    if (_showInOperation)
+                    if (_showInOperation || _disabled)
                     {
                         return;
                     }
@@ -106,74 +106,74 @@ public class Matrix : Grid
                     {
                         throw new ArgumentNullException($"{sender} cannot be null");
                     }
-                    _currentButton = (Button)sender;
+                    _currentTile = (Rectangle)sender;
 
-                    if (!Equals(_currentButton.Background, Brushes.Gray))
+                    if (!Equals(_currentTile.Fill, Brushes.Gray))
                     {
                         return;
                     }
                     
-                    _currentButton.Background = _realColors![i1, j1];
+                    _currentTile.Fill = _realColors![i1, j1];
 
-                    if (Equals(_currentButton.Background, Brushes.White))
+                    if (Equals(_currentTile.Fill, Brushes.White))
                     {
-                        _totalAmountOfRects--;
+                        _totalAmountOfTiles--;
                         CheckIfWin();
                         return;
                     }
 
-                    if (_previousButton == null)
+                    if (_previousTile == null)
                     {
-                        _previousButton = _currentButton;
+                        _previousTile = _currentTile;
                     }
-                    else if (!Equals(_previousButton.Background, _currentButton.Background))
+                    else if (!Equals(_previousTile.Fill, _currentTile.Fill))
                     {
                         _showInOperation = true;
                         DispatcherTimer.RunOnce(CloseTiles, TimeSpan.FromMilliseconds(500));
                         _failures++;
                         if (_failures > _failureLimit)
                         {
+                            Console.WriteLine("dfdaffdsa");
                             OverFailuresLimit!.Invoke(this, EventArgs.Empty);
-                            DisableAllButtons();
+                            DisableAllTiles();
                         }
                     }
                     else
                     {
-                        _previousButton = null;
-                        _totalAmountOfRects -= 2;
+                        _previousTile = null;
+                        _totalAmountOfTiles -= 2;
                         CheckIfWin();
                     }
                 };
                 
-                SetColumn(standardButton, i);
-                SetRow(standardButton, j);
-                Children.Add(standardButton);
+                SetColumn(standardRectangle, i);
+                SetRow(standardRectangle, j);
+                Children.Add(standardRectangle);
             }
         }
     }
 
     private void CloseTiles()
     {
-        Console.WriteLine("2");
-        _previousButton!.Background = Brushes.Gray;
-        _currentButton!.Background = Brushes.Gray;
-        _previousButton = null;
+        _previousTile.Fill = Brushes.Gray;
+        _currentTile.Fill = Brushes.Gray;
+        _previousTile = null;
         _showInOperation = false;
     }
 
     private void InitializeColors()
     {
         var random = new Random(DateTime.Now.Millisecond);
-        _realColors = new IBrush[_amountOfRects,_amountOfRects];
+        _realColors = new IBrush[_amountOfTiles,_amountOfTiles];
 
         var colors = new ArrayList();
-        if ((_amountOfRects * _amountOfRects) / 2 == 16)
+        if ((_amountOfTiles * _amountOfTiles) / 2 == 16)
         {
             colors = _colors;
         }
         else
         {
-            for (var i = 0; i < (_amountOfRects * _amountOfRects) / 2; i++)
+            for (var i = 0; i < (_amountOfTiles * _amountOfTiles) / 2; i++)
             {
                 var color = _colors[random.Next(0, 16)];
                 if (!colors.Contains(color))
@@ -189,9 +189,9 @@ public class Matrix : Grid
 
         colors.AddRange(colors);
 
-        for (var i = 0; i < _amountOfRects; i++)
+        for (var i = 0; i < _amountOfTiles; i++)
         {
-            for (var j = 0; j < _amountOfRects; j++)
+            for (var j = 0; j < _amountOfTiles; j++)
             {
                 if (colors.Count != 0)
                 {
@@ -207,14 +207,14 @@ public class Matrix : Grid
         }
     }
 
-    private void OpenAllCards()
+    private void OpenAllTiles()
     {
         _showInOperation = true;
         int i = 0, j = 0;
         foreach (var control in Children)
         {
-            (control as Button)!.Background = _realColors![i, j];
-            if (j == _amountOfRects - 1)
+            (control as Rectangle)!.Fill = _realColors![i, j];
+            if (j == _amountOfTiles - 1)
             {
                 i++;
                 j = 0;
@@ -226,58 +226,55 @@ public class Matrix : Grid
         }
     }
 
-    private void CloseAllCards()
+    private void CloseAllTiles()
     {
         foreach (var control in Children)
         {
-            var button = control as Button;
+            var button = control as Rectangle;
 
             if (button != null)
             {
-                button.Background = Brushes.Gray;
+                button.Fill = Brushes.Gray;
             }
         }
 
         _showInOperation = false;
     }
     
-    public void ShowCards(long sec)
+    public void ShowTiles(long sec)
     {
-        OpenAllCards();
-        DispatcherTimer.RunOnce(CloseAllCards, TimeSpan.FromSeconds(sec));
+        OpenAllTiles();
+        DispatcherTimer.RunOnce(CloseAllTiles, TimeSpan.FromSeconds(sec));
 
     }
 
-    private void DisableAllButtons(bool disable = true)
+    private void DisableAllTiles(bool disable = true)
     {
-        foreach (var control in Children)
-        {
-            (control as Button)!.IsEnabled = !disable;
-        }
+        _disabled = disable;
     }
     
     private void CheckIfWin()
     {
-        if (_totalAmountOfRects == 0)
+        if (_totalAmountOfTiles == 0)
         {
-            DisableAllButtons();
+            DisableAllTiles();
             Win!.Invoke(this, EventArgs.Empty);
         }
     }
 
     public void NextLevel(int secToShowCards)
     {
-        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
-        RowDefinitions.RemoveRange(0 ,_amountOfRects);
-        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
 
         if (_failures > _failureLimit)
         {
-            _amountOfRects--;
+            _amountOfTiles--;
         }
-        else if (_amountOfRects < 6)
+        else if (_amountOfTiles < 6)
         {
-            _amountOfRects++;
+            _amountOfTiles++;
         }
         else
         {
@@ -287,44 +284,44 @@ public class Matrix : Grid
 
         _failures = 0;
 
-        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
 
         
         SetDefinitions();
         InitializeColors();
-        SetButtons();
-        DisableAllButtons(false);
-        ShowCards(secToShowCards);
+        SetTiles();
+        DisableAllTiles(false);
+        ShowTiles(secToShowCards);
     }
 
     public void Restart(int secToShowCards)
     {
-        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
-        RowDefinitions.RemoveRange(0 ,_amountOfRects);
-        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
 
-        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
         
         SetDefinitions();
         InitializeColors();
-        SetButtons();
-        DisableAllButtons(false);
-        ShowCards(secToShowCards);
+        SetTiles();
+        DisableAllTiles(false);
+        ShowTiles(secToShowCards);
     }
 
     public void EndGame()
     {
-        Children.RemoveRange(0, _amountOfRects * _amountOfRects);
-        RowDefinitions.RemoveRange(0 ,_amountOfRects);
-        ColumnDefinitions.RemoveRange(0, _amountOfRects);
+        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
         
-        _amountOfRects = _rectsAtStart;
-        _totalAmountOfRects = _amountOfRects * _amountOfRects;
+        _amountOfTiles = _tilesAtStart;
+        _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
         _failures = 0;
         
         SetDefinitions();
         InitializeColors();
-        SetButtons();
-        DisableAllButtons(false);
+        SetTiles();
+        DisableAllTiles(false);
     }
 }

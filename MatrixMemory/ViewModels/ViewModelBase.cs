@@ -49,7 +49,7 @@ namespace MatrixMemory.ViewModels
             }
         }
 
-        public void TryAddPlayerScore(int score)
+        public async void TryAddPlayerScore(int score)
         {
             if (!_loggedIn)
             {
@@ -60,8 +60,8 @@ namespace MatrixMemory.ViewModels
             {
                 PlayerStats = new ArrayList();
             }
-            PlayerStats.Add(score);
-            PlayerData.SavePlayer(CurrentPlayer);
+            PlayerStats!.Add(score);
+            await PlayerData.SavePlayer(CurrentPlayer);
             GameScores = CalculateScoresList();
         }
 

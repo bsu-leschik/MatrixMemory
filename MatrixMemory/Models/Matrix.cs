@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -141,7 +142,6 @@ public class Matrix : Grid
                         _score--;
                         if (_failures > _failureLimit)
                         {
-                            Console.WriteLine("dfdaffdsa");
                             OverFailuresLimit?.Invoke(this, EventArgs.Empty);
                             DisableAllTiles();
                         }
@@ -239,9 +239,7 @@ public class Matrix : Grid
     {
         foreach (var control in Children)
         {
-            var button = control as Rectangle;
-
-            if (button != null)
+            if (control is Rectangle button)
             {
                 button.Fill = Brushes.Gray;
             }
@@ -344,7 +342,7 @@ public class Matrix : Grid
         DisableAllTiles(false);
     }
 
-    public void RestartGame(int secToShowCards)
+    private void RestartGame(int secToShowCards)
     {
         Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
         RowDefinitions.RemoveRange(0 ,_amountOfTiles);
@@ -364,6 +362,17 @@ public class Matrix : Grid
     
     public GameSave SaveGame()
     {
-        return new GameSave(_realColors!, _previousTile, _currentTile, _totalAmountOfTiles, _failures, _score);
+        var opened = new List<int>();
+        var i = 0;
+        foreach (var control in Children)
+        {
+            if (!Equals((control as Rectangle)?.Fill, Brushes.Gray))
+            {
+                opened.Add(i);
+            }
+
+            i++;
+        }
+        return new GameSave(_realColors!, opened.ToArray(), Children.IndexOf(_previousTile), Children.IndexOf(_currentTile), _failures, _score);
     }
 }

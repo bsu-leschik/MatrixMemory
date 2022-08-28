@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MatrixMemory.Models;
 
@@ -72,7 +71,7 @@ public static class PlayerData
         return hash;
     }
 
-    public static async void SavePlayer(Player player)
+    public static async Task SavePlayer(Player player)
     {
         if (!CheckDir())
         {

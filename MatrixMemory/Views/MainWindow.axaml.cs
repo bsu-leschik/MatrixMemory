@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -233,16 +234,16 @@ namespace MatrixMemory.Views
             _currentPanel.IsVisible = true;
         }
 
-        private void SaveGame(object? sender, RoutedEventArgs e)
+        private async void SaveGame(object? sender, RoutedEventArgs e)
         {
-            if (_view!.CurrentPlayer == null)
+            if (!_view!.LoggedIn)
             {
                 return;
             }
 
-            //_view!.CurrentPlayer.LastGame = _gameMatrix.SaveGame();
-            
-            
+            string serializedSaveGame = JsonSerializer.Serialize(_gameMatrix.SaveGame());
+            _view!.CurrentPlayer.LastGame = serializedSaveGame;
+            await PlayerData.SavePlayer(_view.CurrentPlayer);
         }
 
         

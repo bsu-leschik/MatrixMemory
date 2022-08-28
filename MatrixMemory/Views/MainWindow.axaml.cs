@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -14,7 +13,7 @@ namespace MatrixMemory.Views
         private readonly Matrix _gameMatrix;
         private StackPanel _lastPanel;
         private StackPanel _currentPanel;
-        private const int MaxFailures = 100;
+        private const int MaxFailures = 20;
 
         public MainWindow()
         {
@@ -34,16 +33,7 @@ namespace MatrixMemory.Views
             
             _gameMatrix.GameEnded += delegate(object? sender, EventArgs args)
             {
-                if (_view!.CurrentPlayer?.Statistics == null && _view.CurrentPlayer != null)
-                {
-                    _view!.CurrentPlayer.Statistics = new ArrayList { _gameMatrix.Score };
-                    PlayerData.SavePlayer(_view.CurrentPlayer);
-                }
-                else if (_view.CurrentPlayer != null)
-                {
-                    _view!.CurrentPlayer.Statistics!.Add(_gameMatrix.Score);
-                    PlayerData.SavePlayer(_view.CurrentPlayer);
-                }
+                _view!.TryAddPlayerScore(_gameMatrix.Score);
                 LevelEndText.Text = $"Your score is {_gameMatrix.Score}";
             };
             _lastPanel = StartMenu;
@@ -136,7 +126,14 @@ namespace MatrixMemory.Views
 
         private void Back(object? sender, RoutedEventArgs e)
         {
-            
+            if (Equals(_lastPanel, MainGame))
+            {
+                _currentPanel.IsVisible = false;
+                MainGame.IsVisible = true;
+                _currentPanel = MainGame;
+                _lastPanel = StartMenu;
+                return;
+            }
 
             if ((Equals(_lastPanel, Identification) && Equals(_currentPanel, Registration)) || 
                 (Equals(_currentPanel, Identification) && Equals(_lastPanel, Registration)) ||
@@ -223,7 +220,7 @@ namespace MatrixMemory.Views
                 return;
             }
 
-            if (_view.CurrentPlayer!.Statistics == null || _view.CurrentPlayer!.Statistics.Count == 0)
+            if (_view.PlayerStats == null || _view.PlayerStats.Count == 0)
             {
                 ResultsProblem.Text = "You haven`t played any games yet";
                 DispatcherTimer.RunOnce(() => ResultsProblem.Text = string.Empty, TimeSpan.FromSeconds(3));

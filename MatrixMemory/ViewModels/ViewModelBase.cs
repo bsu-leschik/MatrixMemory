@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Text.Json;
@@ -47,14 +48,40 @@ namespace MatrixMemory.ViewModels
                 throw new AuthenticationException("Username or Password is wrong");
             }
         }
-        
+
+        public void TryAddPlayerScore(int score)
+        {
+            if (!_loggedIn)
+            {
+                return;
+            }
+
+            if (_currentUser.Statistics == null)
+            {
+                PlayerStats = new ArrayList();
+            }
+            PlayerStats.Add(score);
+            PlayerData.SavePlayer(CurrentPlayer);
+            GameScores = CalculateScoresList();
+        }
+
+        public ArrayList? PlayerStats
+        {
+            get => _currentUser.Statistics;
+            set
+            {
+                _currentUser.Statistics = value;
+                GameScores = CalculateScoresList();
+            }
+        }
+
         public Player CurrentPlayer
         {
             get => _currentUser;
             private set => this.RaiseAndSetIfChanged(ref _currentUser, value);
         }
 
-        private List<KeyValuePair<int, int>>? CalculateScoresList()
+        private List<KeyValuePair<int, int>> CalculateScoresList()
         {
             if (_currentUser.Statistics == null)
             {
@@ -69,6 +96,10 @@ namespace MatrixMemory.ViewModels
                 if (statistic is JsonElement statElement)
                 {
                     pair = new KeyValuePair<int, int>(i, statElement.GetInt32());
+                }
+                else if (statistic is int statInt)
+                {
+                    pair = new KeyValuePair<int, int>(i, statInt);
                 }
                 else
                 {

@@ -293,7 +293,7 @@ public class Matrix : Grid
         }
         else
         {
-            EndGame();
+            RestartGame(secToShowCards);
             return;
         }
 
@@ -344,6 +344,24 @@ public class Matrix : Grid
         DisableAllTiles(false);
     }
 
+    public void RestartGame(int secToShowCards)
+    {
+        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
+
+        _amountOfTiles = _tilesAtStart;
+        _totalAmountOfTiles = _amountOfTiles * _amountOfTiles;
+        _failures = 0;
+        _score = 0;
+        
+        SetDefinitions();
+        InitializeColors();
+        SetTiles();
+        DisableAllTiles(false);
+        ShowTiles(secToShowCards);
+    }
+    
     public GameSave SaveGame()
     {
         return new GameSave(_realColors!, _previousTile, _currentTile, _totalAmountOfTiles, _failures, _score);

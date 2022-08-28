@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Matrix Memory
+Exec="/usr/share/MatrixMemory/MatrixMemory"
+Icon="/usr/share/icons/game-logo.png"
+Type=Application
+StartupNotify=true
+Comment=Start Matrix Memory
+Comment[ru_RU]=Запустить Matrix Memory
+Comment[by_BY]=Запусціць Matrix Memory

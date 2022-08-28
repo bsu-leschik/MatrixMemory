@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="MatrixMemory.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/game-logo.png"
         Title="MatrixMemory" Activated="OnActivated">
-
+    
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
@@ -85,10 +85,11 @@
             
             <StackPanel Spacing="15" Name="Statistics" HorizontalAlignment="Center" IsVisible="False">
                 <TextBlock FontSize="30">Statistics</TextBlock>
-                <DataGrid>
+                
+                <DataGrid Items="{Binding GameScores}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Game №" Binding="{Binding GameNumbers}"/>
-                        <DataGridTextColumn Header="Score" Binding="{Binding GameScores}"/>
+                        <DataGridTextColumn Header="№"  Binding="{Binding Key}"/>
+                        <DataGridTextColumn Header="Score" Binding="{Binding Value}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>

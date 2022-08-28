@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using MatrixMemory.Models;
 using MatrixMemory.ViewModels;
 
@@ -110,7 +111,7 @@ namespace MatrixMemory.Views
 
         private async void Register(object? sender, RoutedEventArgs e)
         {
-            if (UserName.Text == "" || Password.Text == null)
+            if (UserName.Text == "" || Password.Text == "")
             {
                 RegErrorText.Text = "Invalid username or password";
                 return;
@@ -127,7 +128,7 @@ namespace MatrixMemory.Views
                 return;
             }
 
-            _view!.CurrentPlayer = player;
+            await _view!.TrySetPlayer(player);
             Password.Text = null;
             UserName.Text = null;
             Back(sender, e);
@@ -184,35 +185,33 @@ namespace MatrixMemory.Views
             if (UserNameLogIn.Text == "" || PasswordLogIn.Text == null)
             {
                 SignInErrorText.Text = "Invalid username or password";
+                DispatcherTimer.RunOnce(() => SignInErrorText.Text = string.Empty, TimeSpan.FromSeconds(3));
                 return;
             }
 
-            var player = new Player(UserNameLogIn.Text, PlayerData.EncryptPassword(PasswordLogIn.Text));
             try
             {
-                var realPlayer = await PlayerData.IsPlayerValid(player);
-                if (realPlayer != null)
-                {
-                    _view!.CurrentPlayer = realPlayer;
-                    Back(sender, e);
-                }
-                else
-                {
-                    SignInErrorText.Text = "Wrong password, try again";
-                }
+                await _view!.TrySetPlayer(new Player(UserNameLogIn.Text, PlayerData.EncryptPassword(PasswordLogIn.Text)));
             }
-            catch (ArgumentException exception)
+            catch (Exception exception)
             {
                 SignInErrorText.Text = exception.Message;
+                Console.WriteLine(exception);
+                return;
             }
-            
+
+            Back(sender, e);
             PasswordLogIn.Text = null;
             UserNameLogIn.Text = null;
         }
 
-        private void LogOut_OnClick(object? sender, RoutedEventArgs e)
+        private async void LogOut_OnClick(object? sender, RoutedEventArgs e)
         {
-            _view!.CurrentPlayer = null;
+            _currentPanel.IsVisible = false;
+            StartMenu.IsVisible = true;
+            _lastPanel = StartMenu;
+            _currentPanel = StartMenu;
+            await _view!.TrySetPlayer(null);
         }
         
         private void ShowResults(object? sender, RoutedEventArgs e)
@@ -220,13 +219,14 @@ namespace MatrixMemory.Views
             if (!_view!.LoggedIn)
             {
                 ResultsProblem.Text = "Log in firstly";
+                DispatcherTimer.RunOnce(() => ResultsProblem.Text = string.Empty, TimeSpan.FromSeconds(3));
                 return;
             }
 
             if (_view.CurrentPlayer!.Statistics == null || _view.CurrentPlayer!.Statistics.Count == 0)
             {
                 ResultsProblem.Text = "You haven`t played any games yet";
-                
+                DispatcherTimer.RunOnce(() => ResultsProblem.Text = string.Empty, TimeSpan.FromSeconds(3));
                 return;
             }
             _lastPanel = StartMenu;

@@ -38,7 +38,7 @@ public static class PlayerData
         }
     }
 
-    public static async Task<Player?> IsPlayerValid(Player player)
+    public static async Task<Player?> ReturnPlayerIfValid(Player player)
     {
         if (!CheckDir())
         {

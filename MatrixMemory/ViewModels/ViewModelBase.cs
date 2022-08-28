@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Authentication;
+using System.Text.Json;
+using System.Threading.Tasks;
 using ReactiveUI;
 using MatrixMemory.Models;
 
@@ -8,7 +12,8 @@ namespace MatrixMemory.ViewModels
     {
         private bool _loggedIn;
         private bool _endedRound;
-        private Player? _currentUser;
+        private Player _currentUser = new(string.Empty, string.Empty);
+        private List<KeyValuePair<int, int>>? _scoresList;
 
         public bool LoggedIn
         {
@@ -22,34 +27,68 @@ namespace MatrixMemory.ViewModels
             set => this.RaiseAndSetIfChanged(ref _endedRound, value);
         }
 
-        public Player? CurrentPlayer
+        public async Task TrySetPlayer(Player? player)
         {
-            get => _currentUser;
-            set
+            if (player == null)
             {
-                _currentUser = value;
-                LoggedIn = value != null;
+                _currentUser = new Player(string.Empty, string.Empty);
+                LoggedIn = false;
+                return;
+            }
+            var realPlayer = await PlayerData.ReturnPlayerIfValid(player);
+            if (realPlayer != null)
+            {
+                CurrentPlayer = realPlayer;
+                LoggedIn = true;
+                GameScores = CalculateScoresList();
+            }
+            else
+            {
+                throw new AuthenticationException("Username or Password is wrong");
             }
         }
+        
+        public Player CurrentPlayer
+        {
+            get => _currentUser;
+            private set => this.RaiseAndSetIfChanged(ref _currentUser, value);
+        }
 
-        public ArrayList GameNumbers
+        private List<KeyValuePair<int, int>>? CalculateScoresList()
+        {
+            if (_currentUser.Statistics == null)
+            {
+                return new List<KeyValuePair<int, int>>();
+            }
+            
+            var scores = new List<KeyValuePair<int, int>>();
+            var i = 0;
+            foreach (var statistic in _currentUser.Statistics!)
+            {
+                KeyValuePair<int, int> pair;
+                if (statistic is JsonElement statElement)
+                {
+                    pair = new KeyValuePair<int, int>(i, statElement.GetInt32());
+                }
+                else
+                {
+                    throw new ArgumentException("Internal error of authorization process");
+                }
+                
+                scores.Add(pair);
+                i++;
+            }
+
+            return scores;
+        }
+
+        public List<KeyValuePair<int, int>>? GameScores
         {
             get
             {
-                var list = new ArrayList { "Last Game" };
-
-                for (var i = 1; i < _currentUser!.Statistics!.Count; i++)
-                {
-                    list.Add(i);
-                }
-
-                return list;
+                return _scoresList ?? new List<KeyValuePair<int, int>>(new []{new KeyValuePair<int, int>(0,0)});
             }
-        }
-
-        public ArrayList GameScores
-        {
-            get => _currentUser!.Statistics!;
+            set => this.RaiseAndSetIfChanged(ref _scoresList, value);
         }
     }
 }

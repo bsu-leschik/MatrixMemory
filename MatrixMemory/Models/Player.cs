@@ -5,19 +5,16 @@ namespace MatrixMemory.Models;
 
 public class Player
 {
-    [JsonInclude]
     public string UserName { get; set; }
 
-    [JsonInclude]
     public string Password { get; set; }
 
-    [JsonInclude]
-    public string? LastGame { get; set; }
+    [JsonConverter(typeof(GameSaveJsonConverter))]
+    public GameSave? LastGame { get; set; }
 
-    [JsonInclude]
     public ArrayList? Statistics { get; set; }
 
-    public Player(string userName, string password, ArrayList? statistics = null, string? lastGame = null)
+    public Player(string userName, string password, ArrayList? statistics = null, GameSave? lastGame = null)
     {
         UserName = userName;
         Password = password;

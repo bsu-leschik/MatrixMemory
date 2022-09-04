@@ -1,6 +1,5 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Avalonia.Controls.Shapes;
-using Avalonia.Media;
 
 namespace MatrixMemory.Models;
 
@@ -10,7 +9,7 @@ public class GameSave
     public int[] OpenedTiles { get; set; }
 
     [JsonInclude] 
-    public IBrush[][]? RealColors { get; set; }
+    public int[][] RealColors { get; set; }
 
     [JsonInclude]
     public int PreviousTile{ get; set; }
@@ -24,22 +23,9 @@ public class GameSave
     [JsonInclude]
     public int Score{ get; set; }
 
-    public GameSave(IBrush[,] realColors, int[] opened, int previousTile, int currentTile, int failures, int score)
+    public GameSave(int[] opened, int[][] realColors, int previousTile, int currentTile, int failures, int score)
     {
-        RealColors = new IBrush[realColors.GetLength(0)][];
-        for (var i = 0; i < RealColors.Length; i++)
-        {
-            RealColors[i] = new IBrush[realColors.GetLength(0)];
-        }
-        
-        for (var i = 0; i < realColors.GetLength(0); i++)
-        {
-            for (var j = 0; j < realColors.GetLength(0); j++)
-            {
-                RealColors[i][j] = realColors[i, j];
-            }
-        }
-
+        RealColors = realColors;
         OpenedTiles = opened;
         PreviousTile = previousTile;
         CurrentTile = currentTile;

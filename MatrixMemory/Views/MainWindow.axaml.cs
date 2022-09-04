@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -241,9 +240,23 @@ namespace MatrixMemory.Views
                 return;
             }
 
-            string serializedSaveGame = JsonSerializer.Serialize(_gameMatrix.SaveGame());
-            _view!.CurrentPlayer.LastGame = serializedSaveGame;
+            _view!.CurrentPlayer.LastGame = _gameMatrix.SaveGame();
             await PlayerData.SavePlayer(_view.CurrentPlayer);
+        }
+        
+        private void Resume(object? sender, RoutedEventArgs e)
+        {
+            if (_view!.LoggedIn && _view.CurrentPlayer.LastGame != null)
+            {
+                _gameMatrix.LoadGame(_view.CurrentPlayer.LastGame);
+                MainGame.IsVisible = true;
+                StartMenu.IsVisible = false;
+            }
+            else
+            {
+                ResumeProblem.Text = "No game to start";
+                DispatcherTimer.RunOnce(() => ResumeProblem.Text = string.Empty, TimeSpan.FromSeconds(3));
+            }
         }
 
         

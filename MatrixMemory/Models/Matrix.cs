@@ -97,7 +97,8 @@ public class Matrix : Grid
                     VerticalAlignment = VerticalAlignment.Stretch,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Fill = Brushes.Gray,
-                    Margin = Thickness.Parse(_tileMargin.ToString())
+                    Margin = Thickness.Parse(_tileMargin.ToString()),
+                    Name = string.Join("", i, j)
                 };
                 
                 var j1 = j;
@@ -373,6 +374,100 @@ public class Matrix : Grid
 
             i++;
         }
-        return new GameSave(_realColors!, opened.ToArray(), Children.IndexOf(_previousTile), Children.IndexOf(_currentTile), _failures, _score);
+        return new GameSave(opened.ToArray(), GetColorsAsInts(), Children.IndexOf(_previousTile), Children.IndexOf(_currentTile), _failures, _score);
+    }
+
+    private int[][] GetColorsAsInts()
+    {
+        var array = new int[_realColors!.GetLength(0)][];
+        for (var i = 0; i < array.Length; i++)
+        {
+            array[i] = new int[_realColors.GetLength(0)];
+        }
+
+        for (var i = 0; i < _realColors.GetLength(0); i++)
+        {
+            for (var j = 0; j < _realColors.GetLength(0); j++)
+            {
+                array[i][j] = _colors.IndexOf(_realColors[i, j]);
+            }
+        }
+
+        return array;
+    }
+
+    public void LoadGame(GameSave save)
+    {
+        if (save.RealColors.Length is < 1 or > 5)
+        {
+            throw new ArgumentOutOfRangeException(nameof(save.RealColors.Length), $"{save.RealColors.Length} cannot be more then 5 or less then 1");
+        }
+        
+        Children.RemoveRange(0, _amountOfTiles * _amountOfTiles);
+        RowDefinitions.RemoveRange(0 ,_amountOfTiles);
+        ColumnDefinitions.RemoveRange(0, _amountOfTiles);
+        
+        _amountOfTiles = save.RealColors.GetLength(0);
+
+        var amountOfOpened = save.OpenedTiles.Length;
+        if (amountOfOpened % 2 != 0)
+        {
+            amountOfOpened--;
+        }
+        
+        _totalAmountOfTiles = save.RealColors.Length * save.RealColors.Length - amountOfOpened;
+
+        SetDefinitions();
+        InitWithSavedColors(save.RealColors);
+        SetTiles();
+
+        _score = save.Score;
+        
+        if (save.PreviousTile > 0)
+        {
+            _previousTile = Children[save.PreviousTile] as Rectangle;
+        }
+        
+        if (save.CurrentTile > 0)
+        {
+            _currentTile = Children[save.CurrentTile] as Rectangle;
+        }
+        
+        InitClickedTiles(save.OpenedTiles);
+
+    }
+
+    private void InitWithSavedColors(int[][] realColors)
+    {
+        _realColors = new IBrush[realColors.GetLength(0), realColors.GetLength(0)];
+        for (var i = 0; i < realColors.GetLength(0); i++)
+        {
+            for (var j = 0; j < realColors.GetLength(0); j++)
+            {
+                if (realColors[i][j] >= 0)
+                {
+                    _realColors[i, j] = (_colors[realColors[i][j]] as IBrush)!;
+                }
+                else
+                {
+                    _realColors[i, j] = Brushes.White;
+                }
+            }
+        }
+    }
+
+    private void InitClickedTiles(int[] cords)
+    {
+        foreach (var cord in cords)
+        {
+            if (Children[cord] is not Rectangle child || child.Name == null)
+            {
+                throw new NullReferenceException("Internal problem occured when trying to load clicked tiles");
+            }
+
+            var i = int.Parse(child.Name[0].ToString());
+            var j = int.Parse(child.Name[1].ToString());
+            child.Fill = _realColors![i, j];
+        }
     }
 }

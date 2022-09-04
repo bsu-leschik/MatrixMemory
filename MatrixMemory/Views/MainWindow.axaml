@@ -31,10 +31,13 @@
                 <TextBlock Margin="0 0 0 100" HorizontalAlignment="Center" FontSize="50" FontWeight="Medium">Memory Matrix</TextBlock>
                 
                 <Button Click="StartGameButton" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="30" Height="100" Width="300">Start Game</Button>
+                
+                <Button IsVisible="{Binding LoggedIn}" Click="Resume" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200"> Resume</Button>
+                <TextBlock IsVisible="{Binding LoggedIn}" HorizontalAlignment="Center" Name="ResumeProblem" FontStyle="Oblique" FontWeight="Heavy"></TextBlock>
+                
                 <Button Click="ShowResults" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="80" Width="200">Results</Button>
                 <TextBlock HorizontalAlignment="Center" Name="ResultsProblem" FontStyle="Oblique" FontWeight="Heavy"></TextBlock>
             </StackPanel>
-            
             
 
             <StackPanel Name="MainGame" HorizontalAlignment="Center" Spacing="20" Margin="20" IsVisible="False">

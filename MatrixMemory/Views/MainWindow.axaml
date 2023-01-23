@@ -12,7 +12,7 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Border Padding="15">
+    <Border Name="Border" Padding="15">
         <StackPanel Spacing="150">
             <Grid>
                     <Button Grid.Column="0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" Name="BackButton" Height="40" FontSize="20" Click="Back">Back</Button>

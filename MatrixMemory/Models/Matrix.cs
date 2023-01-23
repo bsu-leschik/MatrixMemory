@@ -15,7 +15,7 @@ public class Matrix : Grid
 {
     private int _amountOfTiles;
     private readonly int _tilesAtStart;
-    private readonly int _sizeOfMatrix;
+    private readonly int _sizeOfElement;
     private readonly int _tileMargin;
     private IBrush[,]? _realColors;
     
@@ -42,7 +42,7 @@ public class Matrix : Grid
 
     public event EventHandler? GameEnded;
 
-    public Matrix(int amountOfTiles, int sizeOfMatrix, int failures = Int32.MaxValue, int tileMargin = 1)
+    public Matrix(int amountOfTiles, int sizeOfElement, int failures = Int32.MaxValue, int tileMargin = 1)
     {
         _failureLimit = failures;
         if (amountOfTiles is < 1 or > 5)
@@ -52,10 +52,10 @@ public class Matrix : Grid
 
         _tilesAtStart = amountOfTiles;
         _amountOfTiles = amountOfTiles;
-        _sizeOfMatrix = sizeOfMatrix;
+        _sizeOfElement = sizeOfElement;
         _tileMargin = tileMargin;
-        VerticalAlignment = VerticalAlignment.Center;
-        HorizontalAlignment = HorizontalAlignment.Center;
+        VerticalAlignment = VerticalAlignment.Stretch;
+        HorizontalAlignment = HorizontalAlignment.Stretch;
 
         _totalAmountOfTiles = amountOfTiles * amountOfTiles;
 
@@ -74,13 +74,13 @@ public class Matrix : Grid
         {
             var standardColumnDef = new ColumnDefinition
             {
-                Width = new GridLength(_sizeOfMatrix / _amountOfTiles)
+                Width = new GridLength(_sizeOfElement)
             };
             ColumnDefinitions.Add(standardColumnDef);
             
             var standardRowDef = new RowDefinition
             {
-                Height = new GridLength(_sizeOfMatrix / _amountOfTiles)
+                Height = new GridLength(_sizeOfElement)
             };
             RowDefinitions.Add(standardRowDef);
         }

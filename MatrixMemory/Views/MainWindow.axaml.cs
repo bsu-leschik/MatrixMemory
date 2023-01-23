@@ -18,7 +18,7 @@ namespace MatrixMemory.Views
         public MainWindow()
         {
             InitializeComponent();
-            _gameMatrix = new Matrix(2, 200 , MaxFailures);
+            _gameMatrix = new Matrix(2, 100 , MaxFailures);
             MatrixHolder.Child = _gameMatrix;
             _gameMatrix.Win += delegate
             {
